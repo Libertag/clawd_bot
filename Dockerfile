@@ -25,17 +25,9 @@ WORKDIR /app
 # Install clawdbot globally via npm
 RUN npm install -g clawdbot@latest --no-fund --no-audit
 
-# Create non-root user for running the bot
-RUN addgroup -S clawdbot && \
-    adduser -D -S -G clawdbot clawdbot && \
-    mkdir -p /home/clawdbot/clawd && \
-    chown -R clawdbot:clawdbot /home/clawdbot
-
-# Switch to non-root user
-USER clawdbot
-
-# Set working directory to user home
-WORKDIR /home/clawdbot
+# Set working directory to root's home
+# Running as root to avoid permission issues with clawdbot files
+WORKDIR /root
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

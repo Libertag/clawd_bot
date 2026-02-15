@@ -19,11 +19,11 @@ services:
     
     # Volumes for persistent data
     volumes:
-      # Clawdbot workspace and configuration
-      - clawdbot_data:/home/clawdbot/clawd
-      - clawdbot_config:/home/clawdbot/.clawdbot
+      # Clawdbot workspace and configuration (now running as root)
+      - clawdbot_data:/root/clawd
+      - clawdbot_config:/root/.clawdbot
       # Optional: mount custom scripts or configs
-      # - ./config:/home/clawdbot/config:ro
+      # - ./config:/root/config:ro
     
     # Network configuration
     # Uncomment and adjust if your bot needs to expose ports
