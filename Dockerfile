@@ -22,17 +22,12 @@ RUN apk add --no-cache \
 # Create app directory
 WORKDIR /app
 
-# Copy installation script
-COPY install.sh /tmp/install.sh
-
-# Make install script executable and run installation
-RUN chmod +x /tmp/install.sh && \
-    /tmp/install.sh && \
-    rm -f /tmp/install.sh
+# Install clawdbot globally via npm
+RUN npm install -g clawdbot@latest --no-fund --no-audit
 
 # Create non-root user for running the bot
-RUN addgroup -g 1000 clawdbot && \
-    adduser -D -u 1000 -G clawdbot clawdbot && \
+RUN addgroup -S clawdbot && \
+    adduser -D -S -G clawdbot clawdbot && \
     mkdir -p /home/clawdbot/clawd && \
     chown -R clawdbot:clawdbot /home/clawdbot
 
@@ -46,5 +41,6 @@ WORKDIR /home/clawdbot
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD clawdbot --version || exit 1
 
-# Default command
-CMD ["clawdbot"]
+# Default command - keep container running
+# Users can override this to run specific clawdbot commands
+CMD ["tail", "-f", "/dev/null"]
