@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  clawdbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: clawdbot:latest
+    container_name: clawdbot
+    restart: unless-stopped
+    
+    # Environment variables from .env file
+    env_file:
+      - .env
+    
+    # Additional environment variables
+    environment:
+      - NODE_ENV=production
+      - CLAWDBOT_NO_PROMPT=1
+      - CLAWDBOT_NO_ONBOARD=1
+    
+    # Volumes for persistent data
+    volumes:
+      # Clawdbot workspace and configuration
+      - clawdbot_data:/home/clawdbot/clawd
+      - clawdbot_config:/home/clawdbot/.clawdbot
+      # Optional: mount custom scripts or configs
+      # - ./config:/home/clawdbot/config:ro
+    
+    # Network configuration
+    # Uncomment and adjust if your bot needs to expose ports
+    # ports:
+    #   - "8080:8080"
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Resource limits (adjust as needed)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "clawdbot", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  clawdbot_data:
+    driver: local
+  clawdbot_config:
+    driver: local
+
+# Optional: custom network
+# networks:
+#   clawdbot_network:
+#     driver: bridge
